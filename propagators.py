@@ -60,6 +60,7 @@ propagator == a function with the following template
             for gac we initialize the GAC queue with all constraints containing
             V.
 '''
+import copy
 
 def prop_BT(csp, newVar=None):
     '''Do plain backtracking propagation. That is, do no
@@ -108,6 +109,53 @@ def prop_FC(csp, newVar=None):
     '''
 
 #IMPLEMENT
+    if newVar == None:
+        constraints = csp.get_all_cons()
+    else:
+        constraints = csp.get_cons_with_var(newVar)
+
+    # print contraints #for testing
+
+    single = []
+    for c in constraints:
+        if c.get_n_unasgn() == 1:
+            temp_tuple = (c, c.get_unasgn_vars()[0])
+            single.append(temp_tuple)
+
+    # print("Single", single)
+
+    # sorted_constraints = sorted(single, key=get_key)
+    if single == []:
+        print("single", '[]')
+    else:
+        for s in single:
+            print("single", s)
+    #Conduct forward checking
+
+
+    prune_vals = []
+    while len(single) > 0:
+        constraint,unasgn_var = single.pop()
+        cur_dom = copy.deepcopy(unasgn_var.cur_domain())
+        for val in cur_dom:
+            testing_values = []
+            for var in constraint.get_scope():
+                if var is not unasgn_var:
+                    testing_values.append(var.get_assigned_value())
+                else:
+                    testing_values.append(val)
+            if not constraint.check(testing_values):
+                prune_vals.append((unasgn_var, val))
+                unasgn_var.prune_value(val)
+                if len(unasgn_var.cur_domain()) is 0: #reached DWO
+                    return (False, prune_vals)
+
+
+    return (True, prune_vals)
+
+def get_key(item):
+    return len(item[1].cur_domain())
+
 
 def prop_GAC(csp, newVar=None):
     '''Do GAC propagation, as described in lecture. See beginning of this file
@@ -134,3 +182,26 @@ def prop_GAC(csp, newVar=None):
     '''
 
 #IMPLEMENT
+
+    check_constraints = []
+    if newVar is None: #Check all constraints
+        check_constraints = csp.get_all_cons()
+    else: #Check only constraints containing newVar
+        check_constraints = csp.get_cons_with_var(newVar)
+    #Check if variables have support for each value
+    prune_vals = []
+    while len(check_constraints) > 0:
+        constraint = check_constraints.pop(0)
+        variables = constraint.get_scope()
+        for variable in variables:
+            for value in variable.cur_domain():
+                if constraint.has_support(variable, value) is False:
+                    prune_vals.append((variable, value))
+                    variable.prune_value(value)
+                    if len(variable.cur_domain()) is 0: #reached DWO
+                        return (False, prune_vals)
+                    else:
+                        for new_constraint in csp.get_cons_with_var(variable):
+                            if new_constraint not in check_constraints:
+                                check_constraints.append(new_constraint)
+    return (True, prune_vals)
