@@ -116,8 +116,12 @@ def prop_FC(csp, newVar=None):
     # print contraints #for testing
 
     single = []
+
     for c in constraints:
+        # check if constraint is unassigned
+
         if c.get_n_unasgn() == 1:
+            # append to single 
             temp_tuple = (c, c.get_unasgn_vars()[0])
             single.append(temp_tuple)
 
@@ -128,34 +132,36 @@ def prop_FC(csp, newVar=None):
     # else:
     #     for s in single:
     #         print("single", s)
-    #Conduct forward checking
-
 
     prune = []
 
 
     while len(single) > 0:
-        constraint,unassigned = single.pop()
+        # take first element of single constraint row
+        constraint, unassigned = single.pop()
+        # find domain
         cur_dom = unassigned.cur_domain()
-        for val in cur_dom:
+
+        for item in cur_dom:
 
             temp = []
 
             for var in constraint.get_scope():
                 #append assigned value if assigned
 
-                if var is not unassigned:
+                if var != unassigned:
                     temp.append(var.get_assigned_value())
+
                 else:
-                    temp.append(val)
+                    temp.append(item)
 
             if not constraint.check(temp):
                 # prune
-                prune.append((unassigned, val))
-                unassigned.prune_value(val)
+                prune.append((unassigned, item))
+                unassigned.prune_value(item)
 
                 if len(unassigned.cur_domain()) == 0: 
-
+                    # if length is 0 then return false
                     return (False, prune)
 
 
@@ -197,21 +203,22 @@ def prop_GAC(csp, newVar=None):
     prune = []
     while len(constraints) > 0:
 
-        constraint = constraints.pop(0)
+        constraint = constraints.pop()
+        items = constraint.get_scope()
+        for i in items:
+            for value in i.cur_domain():
 
-        variables = constraint.get_scope()
-        for variable in variables:
-            for value in variable.cur_domain():
+                # find values to prune and commence with the pruning
 
-                if constraint.has_support(variable, value) == False:
-                    prune.append((variable, value))
-                    variable.prune_value(value)
+                if constraint.has_support(i, value) == False:
+                    prune.append((i, value))
+                    i.prune_value(value)
 
 
-                    if len(variable.cur_domain()) == 0:
+                    if len(i.cur_domain()) == 0:
                         return (False, prune)
                     else:
-                        for new_constraint in csp.get_cons_with_var(variable):
+                        for new_constraint in csp.get_cons_with_var(i):
                             if new_constraint not in constraints:
                                 constraints.append(new_constraint)
     return (True, prune)
