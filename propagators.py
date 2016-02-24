@@ -108,23 +108,15 @@ def prop_FC(csp, newVar=None):
     '''
 
 #IMPLEMENT
+    single = []
+    prune = []
+
     if newVar == None:
         constraints = csp.get_all_cons()
     else:
         constraints = csp.get_cons_with_var(newVar)
 
     # print contraints #for testing
-
-    single = []
-
-    for c in constraints:
-        # check if constraint is unassigned
-
-        if c.get_n_unasgn() == 1:
-            # append to single 
-            temp_tuple = (c, c.get_unasgn_vars()[0])
-            single.append(temp_tuple)
-
     # print("Single", single)
 
     # if single == []:
@@ -133,7 +125,13 @@ def prop_FC(csp, newVar=None):
     #     for s in single:
     #         print("single", s)
 
-    prune = []
+    for c in constraints:
+        # check if constraint is unassigned
+
+        if c.get_n_unasgn() == 1:
+            # append to single 
+            temp_tuple = (c, c.get_unasgn_vars()[0])
+            single.append(temp_tuple)
 
 
     while len(single) > 0:
@@ -206,19 +204,19 @@ def prop_GAC(csp, newVar=None):
         constraint = constraints.pop()
         items = constraint.get_scope()
         for i in items:
-            for value in i.cur_domain():
+            for val in i.cur_domain():
 
                 # find values to prune and commence with the pruning
 
-                if constraint.has_support(i, value) == False:
-                    prune.append((i, value))
-                    i.prune_value(value)
+                if constraint.has_support(i, val) == False:
+                    prune.append((i, val))
+                    i.prune_value(val)
 
 
                     if len(i.cur_domain()) == 0:
                         return (False, prune)
                     else:
-                        for new_constraint in csp.get_cons_with_var(i):
-                            if new_constraint not in constraints:
-                                constraints.append(new_constraint)
+                        for new in csp.get_cons_with_var(i):
+                            if new not in constraints:
+                                constraints.append(new)
     return (True, prune)
