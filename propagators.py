@@ -124,19 +124,12 @@ def prop_FC(csp, newVar=None):
     # else:
     #     for s in single:
     #         print("single", s)
-
-    for c in constraints:
-        # check if constraint is unassigned
-
-        if c.get_n_unasgn() == 1:
-            # append to single 
-            temp_tuple = (c, c.get_unasgn_vars()[0])
-            single.append(temp_tuple)
+    single = single_constraints_FC(constraints)
 
 
     while len(single) > 0:
         # take first element of single constraint row
-        constraint, unassigned = single.pop()
+        constraint, unassigned = single.pop(0)
         # find domain
         cur_dom = unassigned.cur_domain()
 
@@ -164,6 +157,20 @@ def prop_FC(csp, newVar=None):
 
 
     return (True, prune)
+
+def single_constraints_FC(constraints):
+    single = []
+
+    for c in constraints:
+        # check if constraint is unassigned
+
+        if c.get_n_unasgn() == 1:
+            # append to single 
+            temp_tuple = (c, c.get_unasgn_vars()[0])
+            single.append(temp_tuple)
+
+
+    return single
 
 
 def prop_GAC(csp, newVar=None):
@@ -201,8 +208,9 @@ def prop_GAC(csp, newVar=None):
     prune = []
     while len(constraints) > 0:
 
-        constraint = constraints.pop()
+        constraint = constraints.pop(0)
         items = constraint.get_scope()
+
         for i in items:
             for val in i.cur_domain():
 
