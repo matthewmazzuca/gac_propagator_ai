@@ -101,12 +101,13 @@ def futoshiki_csp_model_1(initial_futoshiki_board):
 
     for x in range(1, board_dim + 1):
         for y in range(1, board_dim + 1):
-            if x is not y:
+            if x != y:
                 wo_ineq.append((x,y))
             if x < y:
                 x_less_y.append((x,y))
             if x > y:
                 x_great_y.append((x,y))
+
     #Add inequality row constraints
     get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
                         futoshiki_csp, x_great_y, x_less_y, 1)
@@ -168,6 +169,7 @@ def futoshiki_csp_model_2(initial_futoshiki_board):
             else:
                 column_array.insert(len(column_array), Variable('{},{}'.format(row, column), [initial_futoshiki_board[row][column*2]]))
         var_arr.insert(len(var_arr), copy.deepcopy(column_array))
+        
     #Construct CSP
     futoshiki_csp = make_CSP(var_arr, board_dim)
 
