@@ -14,28 +14,28 @@ def futoshiki_csp_model_1(initial_futoshiki_board):
     futoshiki_csp = make_CSP(var_arr, board_dim)
 
     #Construct list of types
-    # set up lists for without inequality, x<y, x>y respectively.  Satisfying
+    # set up lists for without inequality, one<y, one>y respectively.  Satisfying
     # tuples will be put in these lists
     wo_ineq = []
-    x_less_y = [] 
-    x_great_y = [] 
+    one_less_two = [] 
+    one_great_two = [] 
     # append appropriate tuples to list
     # non equal constraints
-    for x in range(1, board_dim + 1):
-        for y in range(1, board_dim + 1):
+    for one in range(1, board_dim + 1):
+        for two in range(1, board_dim + 1):
             # if first is not second
-            if x != y:
-                wo_ineq.append((x,y))
+            if one != two:
+                wo_ineq.append((one,two))
             # if first is less than second
-            if x < y:
-                x_less_y.append((x,y))
+            if one < two:
+                one_less_two.append((one,two))
             # if first is greater than second
-            if x > y:
-                x_great_y.append((x,y))
+            if one > two:
+                one_great_two.append((one,two))
 
     #get inequality-in-row constraints
     get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
-                        futoshiki_csp, x_great_y, x_less_y, 1)
+                        futoshiki_csp, one_great_two, one_less_two, 1)
     #get column constraints
     get_col_constraints(board_dim, var_arr, wo_ineq, futoshiki_csp, 1)
 
@@ -54,25 +54,25 @@ def futoshiki_csp_model_2(initial_futoshiki_board):
     #Construct CSP
     futoshiki_csp = make_CSP(var_arr, board_dim)
 
-    #satisfying tuples for variable sets (x_1,x_2,...,x_n) with no inequality
+    #satisfying tuples for variable sets (one_1,one_2,...,one_n) with no inequality
     wo_ineq = gen_tups(board_dim)
 
-    #satisfying tuples for variable pairs (x,y) such that x < y 
-    x_less_y = []
+    #satisfying tuples for variable pairs (one,y) such that one < y 
+    one_less_two = []
 
-    #satisfying tuples for variable pairs (x,y) such that x > y 
-    x_great_y = []
-    for x in range(1, board_dim + 1):
-        for y in range(x, board_dim + 1):
+    #satisfying tuples for variable pairs (one,y) such that one > y 
+    one_great_two = []
+    for one in range(1, board_dim + 1):
+        for two in range(one, board_dim + 1):
             # append tuples to lists
             # set up for all constraints
-            if x < y:
+            if one < two:
                 # if first is less than second append both in reverse order
-                x_less_y.append((x,y))
-                x_great_y.append((y,x))
+                one_less_two.append((one,two))
+                one_great_two.append((two,one))
     #Add inequality constraints
     get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
-                        futoshiki_csp, x_great_y, x_less_y, 2)
+                        futoshiki_csp, one_great_two, one_less_two, 2)
     #Add row constraints
     
     get_col_constraints(board_dim, var_arr, wo_ineq, futoshiki_csp, 2)
@@ -119,7 +119,7 @@ def gen_var_arr(board_dim, initial_futoshiki_board):
     return var
 
 def get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
-                        futoshiki_csp, x_great_y, x_less_y, model_id):
+                        futoshiki_csp, one_great_y, one_less_y, model_id):
     # get inequality constraints
     # function for both models
     # formatting done as per model_id
@@ -138,10 +138,10 @@ def get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
                             (var_arr[item][attr_1], var_arr[item][attr_2]))
                     # cjcelc of greater
                     if attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
-                        constraint.add_satisfying_tuples(x_great_y)
+                        constraint.add_satisfying_tuples(one_great_y)
                     # check if less than
                     elif attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
-                        constraint.add_satisfying_tuples(x_less_y)
+                        constraint.add_satisfying_tuples(one_less_y)
                     else:
                         # else there is no inequality
                         constraint.add_satisfying_tuples(wo_ineq)
@@ -155,11 +155,11 @@ def get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
                             (var_arr[item][attr_1], var_arr[item][attr_2]))
                     # check if greater than
                     if attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
-                        constraint.add_satisfying_tuples(x_great_y)
+                        constraint.add_satisfying_tuples(one_great_y)
                         futoshiki_csp.add_constraint(constraint)
                     # check if less than
                     elif attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
-                        constraint.add_satisfying_tuples(x_less_y)
+                        constraint.add_satisfying_tuples(one_less_y)
                         futoshiki_csp.add_constraint(constraint)
 
     return futoshiki_csp
