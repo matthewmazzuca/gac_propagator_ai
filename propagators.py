@@ -78,42 +78,11 @@ def prop_BT(csp, newVar=None):
     return True, []
 
 def prop_FC(csp, newVar=None):
-    '''Do forward checking.  That is, check constraints with only one
-    uninstantiated variable, and prune appropriately.  (i.e., do not prune a
-    value that has already been pruned; do not prune the same value twice.)
-    Return if a deadend has been detected, and return the variable/value pairs
-    that have been pruned.  See beginning of this file for complete description
-    of what propagator functions should take as input and return.
-
-    Input: csp, (optional) newVar.
-        csp is a CSP object---the propagator uses this to
-        access the variables and constraints.
-
-        newVar is an optional argument.
-        if newVar is not None:
-            then newVar is the most recently assigned variable of the search.
-            run FC on all constraints that contain newVar.
-        else:
-            propagator is called before any assignments are made in which case
-            it must decide what processing to do prior to any variable
-            assignment.
-
-    Returns: (boolean,list) tuple, where list is a list of tuples:
-             (True/False, [(Variable, Value), (Variable, Value), ... ])
-
-        boolean is False if a deadend has been detected, and True otherwise.
-
-        list is a set of variable/value pairs that are all of the values the
-        propagator pruned.
-    '''
-
-#IMPLEMENT
     single = []
     prune = []
 
-    if newVar == None:
-        constraints = csp.get_all_cons()
-    else:
+    constraints = csp.get_all_cons()
+    if newVar != None:
         constraints = csp.get_cons_with_var(newVar)
 
     # print contraints #for testing
@@ -174,34 +143,9 @@ def single_constraints_FC(constraints):
 
 
 def prop_GAC(csp, newVar=None):
-    '''Do GAC propagation, as described in lecture. See beginning of this file
-    for complete description of what propagator functions should take as input
-    and return.
 
-    Input: csp, (optional) newVar.
-        csp is a CSP object---the propagator uses this to access the variables
-        and constraints.
-
-        newVar is an optional argument.
-        if newVar is not None:
-            do GAC enforce with constraints containing newVar on the GAC queue.
-        else:
-            Do initial GAC enforce, processing all constraints.
-
-    Returns: (boolean,list) tuple, where list is a list of tuples:
-             (True/False, [(Variable, Value), (Variable, Value), ... ])
-
-    boolean is False if a deadend has been detected, and True otherwise.
-
-    list is a set of variable/value pairs that are all of the values the
-    propagator pruned.
-    '''
-
-    constraints = []
-
-    if newVar == None: 
-        constraints = csp.get_all_cons()
-    else: 
+    constraints = csp.get_all_cons()
+    if newVar != None: 
         constraints = csp.get_cons_with_var(newVar)
 
     # prune values
@@ -215,7 +159,6 @@ def prop_GAC(csp, newVar=None):
             for val in i.cur_domain():
 
                 # find values to prune and commence with the pruning
-
                 if constraint.has_support(i, val) == False:
                     prune.append((i, val))
                     i.prune_value(val)
