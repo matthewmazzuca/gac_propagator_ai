@@ -21,8 +21,8 @@ def futoshiki_csp_model_1(initial_futoshiki_board):
     one_great_two = [] 
     # append appropriate tuples to list
     # non equal constraints
-    for one in range(1, board_dim + 1):
-        for two in range(1, board_dim + 1):
+    for one in range(1, board_dim+1):
+        for two in range(1, board_dim+1):
             # if first is not second
             if one != two:
                 wo_ineq.append((one,two))
@@ -62,8 +62,8 @@ def futoshiki_csp_model_2(initial_futoshiki_board):
 
     #satisfying tuples for variable pairs (one,y) such that one > y 
     one_great_two = []
-    for one in range(1, board_dim + 1):
-        for two in range(one, board_dim + 1):
+    for one in range(1, board_dim+1):
+        for two in range(one, board_dim+1):
             # append tuples to lists
             # set up for all constraints
             if one < two:
@@ -137,10 +137,10 @@ def get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
                     constraint = Constraint('[({},{})({},{})]'.format(item,attr_1,item,attr_2), 
                             (var_arr[item][attr_1], var_arr[item][attr_2]))
                     # cjcelc of greater
-                    if attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
+                    if attr_2 == (attr_1+1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
                         constraint.add_satisfying_tuples(one_great_y)
                     # check if less than
-                    elif attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
+                    elif attr_2 == (attr_1+1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
                         constraint.add_satisfying_tuples(one_less_y)
                     else:
                         # else there is no inequality
@@ -154,11 +154,11 @@ def get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
                     constraint = Constraint('[({},{})({},{})]'.format(item,attr_1,item,attr_2), 
                             (var_arr[item][attr_1], var_arr[item][attr_2]))
                     # check if greater than
-                    if attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
+                    if attr_2 == (attr_1+1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
                         constraint.add_satisfying_tuples(one_great_y)
                         futoshiki_csp.add_constraint(constraint)
                     # check if less than
-                    elif attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
+                    elif attr_2 == (attr_1+1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
                         constraint.add_satisfying_tuples(one_less_y)
                         futoshiki_csp.add_constraint(constraint)
 
