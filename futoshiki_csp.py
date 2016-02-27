@@ -1,9 +1,4 @@
-#Look for #IMPLEMENT tags in this file. These tags indicate what has
-#to be implemented.
 
-'''
-Construct and return Futoshiki CSP models.
-'''
 
 from cspbase import *
 import itertools
@@ -79,23 +74,19 @@ def futoshiki_csp_model_1(initial_futoshiki_board):
     All of the constraints of Model_1 MUST BE binary constraints (i.e.,
     constraints whose scope includes two and only two variables).
     '''
+
+
     board_dim = len(initial_futoshiki_board) #board_dim := n
     #Construct var_arr
-
     var_arr = gen_var_arr(board_dim, initial_futoshiki_board)
-
     #Construct CSP
     futoshiki_csp = make_CSP(var_arr, board_dim)
 
     #Construct satisfying tuples
-
     #satisfying tuples for variable pairs (x,y) with no inequality
-
     wo_ineq = []
-
     #satisfying tuples for variable pairs (x,y) such that x < y 
     x_less_y = [] 
-
     #satisfying tuples for variable pairs (x,y) such that x > y
     x_great_y = [] 
 
@@ -111,12 +102,10 @@ def futoshiki_csp_model_1(initial_futoshiki_board):
     #Add inequality row constraints
     get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
                         futoshiki_csp, x_great_y, x_less_y, 1)
-    #Add column constraints
+    #Add col constraints
     get_col_constraints(board_dim, var_arr, wo_ineq, futoshiki_csp, 1)
     #Done
     return (futoshiki_csp, var_arr)
-
-#IMPLEMENT
 
 
 
@@ -151,7 +140,7 @@ def futoshiki_csp_model_2(initial_futoshiki_board):
     However, Model_2 has different constraints. In particular, instead of
     binary non-equals constaints Model_2 has 2*n all-different constraints:
     all-different constraints for the variables in each of the n rows, and n
-    columns. Each of these constraints is over n-variables (some of these
+    cols. Each of these constraints is over n-variables (some of these
     variables will have a single value in their domain). Model_2 should create
     these all-different constraints between the relevant variables, and then
     separately generate the appropriate binary inequality constraints as
@@ -161,15 +150,15 @@ def futoshiki_csp_model_2(initial_futoshiki_board):
     board_dim = len(initial_futoshiki_board) #board_dim := n
     #Construct var_arr
     var_arr = []
-    for row in range(board_dim):
-        column_array = []
-        for column in range(board_dim):
-            if initial_futoshiki_board[row][column*2] is 0:
-                column_array.insert(len(column_array), Variable('{},{}'.format(row, column), range(1,board_dim+1)))
+    for item in range(board_dim):
+        cols = []
+        for col in range(board_dim):
+            if initial_futoshiki_board[item][col*2] is 0:
+                cols.insert(len(cols), Variable('{},{}'.format(item, col), range(1,board_dim+1)))
             else:
-                column_array.insert(len(column_array), Variable('{},{}'.format(row, column), [initial_futoshiki_board[row][column*2]]))
-        var_arr.insert(len(var_arr), copy.deepcopy(column_array))
-        
+                cols.insert(len(cols), Variable('{},{}'.format(item, col), [initial_futoshiki_board[item][col*2]]))
+        var_arr.insert(len(var_arr), copy.deepcopy(cols))
+
     #Construct CSP
     futoshiki_csp = make_CSP(var_arr, board_dim)
 
@@ -194,16 +183,14 @@ def futoshiki_csp_model_2(initial_futoshiki_board):
     get_col_constraints(board_dim, var_arr, wo_ineq, futoshiki_csp, 2)
     #Done
     return (futoshiki_csp, var_arr)
-#IMPLEMENT
-
 
 ############################## Supplementary 
 
 def make_CSP(var_arr, board_dim):
   futoshiki_csp = CSP('futoshiki[{}]'.format(board_dim))
 
-  for row in range(len(var_arr)): #Add variables to CSP
-      for variable in var_arr[row]:
+  for item in range(len(var_arr)): #Add variables to CSP
+      for variable in var_arr[item]:
           futoshiki_csp.add_var(variable)
 
   return futoshiki_csp
@@ -213,42 +200,42 @@ def make_CSP(var_arr, board_dim):
 def gen_var_arr(board_dim, initial_futoshiki_board):
   var = []
 
-  for row in range(board_dim):
-        column_array = []
-        for column in range(board_dim):
-            if initial_futoshiki_board[row][column*2] is 0:
-                column_array.insert(len(column_array), Variable('{},{}'.format(row, column), range(1,board_dim+1)))
+  for item in range(board_dim):
+        cols = []
+        for col in range(board_dim):
+            if initial_futoshiki_board[item][col*2] == 0:
+                cols.insert(len(cols), Variable('{},{}'.format(item, col), range(1,board_dim+1)))
             else:
-                column_array.insert(len(column_array), Variable('{},{}'.format(row, column), [initial_futoshiki_board[row][column*2]]))
-        var.insert(len(var), copy.deepcopy(column_array))
+                cols.insert(len(cols), Variable('{},{}'.format(item, col), [initial_futoshiki_board[item][col*2]]))
+        var.insert(len(var), copy.deepcopy(cols))
 
   return var
 
 def get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
                         futoshiki_csp, x_great_y, x_less_y, model_id):
     if model_id ==1:
-        for row in range(board_dim):
-            for var1 in range(board_dim):
-                for var2 in range(var1 + 1, board_dim):
-                    constraint = Constraint('[({},{})({},{})]'.format(row,var1,row,var2), 
-                            (var_arr[row][var1], var_arr[row][var2]))
-                    if var2 == (var1 + 1) and initial_futoshiki_board[row][var1*2+1] is '>':
+        for item in range(board_dim):
+            for attr_1 in range(board_dim):
+                for attr_2 in range(attr_1 + 1, board_dim):
+                    constraint = Constraint('[({},{})({},{})]'.format(item,attr_1,item,attr_2), 
+                            (var_arr[item][attr_1], var_arr[item][attr_2]))
+                    if attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
                         constraint.add_satisfying_tuples(x_great_y)
-                    elif var2 == (var1 + 1) and initial_futoshiki_board[row][var1*2+1] is '<':
+                    elif attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
                         constraint.add_satisfying_tuples(x_less_y)
                     else:
                         constraint.add_satisfying_tuples(wo_ineq)
                     futoshiki_csp.add_constraint(constraint)
     else:
-        for row in range(board_dim):
-            for var1 in range(board_dim):
-                for var2 in range(var1 + 1, board_dim):
-                    constraint = Constraint('[({},{})({},{})]'.format(row,var1,row,var2), 
-                            (var_arr[row][var1], var_arr[row][var2]))
-                    if var2 == (var1 + 1) and initial_futoshiki_board[row][var1*2+1] is '>':
+        for item in range(board_dim):
+            for attr_1 in range(board_dim):
+                for attr_2 in range(attr_1 + 1, board_dim):
+                    constraint = Constraint('[({},{})({},{})]'.format(item,attr_1,item,attr_2), 
+                            (var_arr[item][attr_1], var_arr[item][attr_2]))
+                    if attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '>':
                         constraint.add_satisfying_tuples(x_great_y)
                         futoshiki_csp.add_constraint(constraint)
-                    elif var2 == (var1 + 1) and initial_futoshiki_board[row][var1*2+1] is '<':
+                    elif attr_2 == (attr_1 + 1) and initial_futoshiki_board[item][(attr_1*2)+1] == '<':
                         constraint.add_satisfying_tuples(x_less_y)
                         futoshiki_csp.add_constraint(constraint)
 
@@ -257,27 +244,27 @@ def get_ineq_contraints(board_dim, var_arr, wo_ineq, initial_futoshiki_board, \
 
 def get_col_constraints(board_dim, var_arr, wo_ineq, futoshiki_csp, model_id):
     if model_id == 1:
-        for column in range(board_dim):
-            for var1 in range(board_dim):
-                for var2 in range(var1 + 1, board_dim):
-                    constraint = Constraint('[({},{})({},{})]'.format(var1,column,var2,column),
-                        (var_arr[var1][column], var_arr[var2][column]))
+        for col in range(board_dim):
+            for attr_1 in range(board_dim):
+                for attr_2 in range(attr_1 + 1, board_dim):
+                    constraint = Constraint('[({},{})({},{})]'.format(attr_1,col,attr_2,col),
+                        (var_arr[attr_1][col], var_arr[attr_2][col]))
                     constraint.add_satisfying_tuples(wo_ineq)
                     futoshiki_csp.add_constraint(constraint)
     else:
-        for row in range(board_dim):
+        for item in range(board_dim):
             variable_scope = []
-            for column in range(board_dim):
-                variable_scope.append(var_arr[row][column])
-            constraint = Constraint('[row {}]'.format(row), tuple(variable_scope))
+            for col in range(board_dim):
+                variable_scope.append(var_arr[item][col])
+            constraint = Constraint('[item {}]'.format(item), tuple(variable_scope))
             constraint.add_satisfying_tuples(wo_ineq)
             futoshiki_csp.add_constraint(constraint)
-        #Add column constraints
-        for column in range(board_dim):
+        #Add col constraints
+        for col in range(board_dim):
             variable_scope = []
-            for row in range(board_dim):
-                variable_scope.append(var_arr[row][column])
-            constraint = Constraint('[column {}]'.format(column), tuple(variable_scope))
+            for item in range(board_dim):
+                variable_scope.append(var_arr[item][col])
+            constraint = Constraint('[col {}]'.format(col), tuple(variable_scope))
             constraint.add_satisfying_tuples(wo_ineq)
             futoshiki_csp.add_constraint(constraint)
 

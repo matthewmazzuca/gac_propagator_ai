@@ -137,11 +137,11 @@ def prop_FC(csp, newVar=None):
 
             temp = []
 
-            for var in constraint.get_scope():
+            for i in constraint.get_scope():
                 #append assigned value if assigned
 
-                if var != unassigned:
-                    temp.append(var.get_assigned_value())
+                if i != unassigned:
+                    temp.append(i.get_assigned_value())
 
                 else:
                     temp.append(item)
@@ -219,8 +219,6 @@ def prop_GAC(csp, newVar=None):
                 if constraint.has_support(i, val) == False:
                     prune.append((i, val))
                     i.prune_value(val)
-
-
                     if len(i.cur_domain()) == 0:
                         return (False, prune)
                     else:
